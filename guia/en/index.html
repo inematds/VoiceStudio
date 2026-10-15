@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VoiceStudio — local voice, dubbing and transcription</title>
+<meta name="description" content="VoiceStudio guide: an open, local alternative to ElevenLabs to clone voices, create a voice from a description, dub video and transcribe in 646 languages, with an API and MCP for agents.">
+<link rel="alternate" hreflang="pt-BR" href="https://inematds.github.io/VoiceStudio/guia/">
+<link rel="alternate" hreflang="en" href="https://inematds.github.io/VoiceStudio/guia/en/">
+<link rel="alternate" hreflang="es" href="https://inematds.github.io/VoiceStudio/guia/es/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c10; --bg2:#14141b; --card:#16161e; --line:#272730;
+    --txt:#e9e9ee; --mut:#9a9aa6; --amb:#E2A23B; --amb2:#f0c070; --sky:#38bdf8; --pro:#cbd5e1;
+    color-scheme:dark;
+  }
+  body.light{
+    --bg:#f6f7f9; --bg2:#eceef2; --card:#ffffff; --line:#e1e3ea;
+    --txt:#1a1a22; --mut:#5b5b68; --amb:#b9791d; --amb2:#a16207; --sky:#0369a1; --pro:#b45309;
+    color-scheme:light;
+  }
+  body.light .hero .glow{opacity:.5}
+  body.light pre{background:#0e0e14;color:#d6d6e0}
+  body.light pre .c{color:#8a8a98}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Sora,sans-serif;line-height:1.15;margin:0}
+  a{color:var(--amb);text-decoration:none}
+  code,pre{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  .mut{color:var(--mut)} .amb{color:var(--amb)}
+  .chip{display:inline-block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amb);font-weight:600;font-family:Sora}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(12,12,16,.78);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:22px;height:60px}
+  nav .brand{display:flex;align-items:center;gap:8px;font-family:Sora;font-weight:800;letter-spacing:-.02em;color:var(--amb)}
+  nav .brand .emoji{font-size:1.25rem}
+  nav .sep{color:var(--mut);opacity:.45}
+  nav .inema{color:var(--sky);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .inema:hover{filter:brightness(1.15)}
+  nav .pro{color:var(--pro);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .pro:hover{filter:brightness(1.15)}
+  nav .clubpro{display:inline-flex;align-items:center;gap:6px}
+  nav .links{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:.92rem}
+  nav .links a.sec{color:var(--mut)} nav .links a.sec:hover{color:var(--txt)}
+  .lang{display:inline-flex;gap:2px;font-family:Sora;font-size:.78rem}
+  .lang a{color:var(--mut);padding:.2em .45em;border-radius:6px} .lang a.on{color:var(--amb);background:rgba(226,162,59,.12)}
+  .tgl{background:var(--bg2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem}
+  .tgl:hover{border-color:var(--amb)}
+  .btn{display:inline-block;background:var(--amb);color:#1a1206;font-weight:600;padding:.6em 1.05em;border-radius:10px;font-family:Sora}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  @media(max-width:760px){nav .links a.sec{display:none}}
+  @media(max-width:520px){nav .wrap{gap:8px;padding:8px 14px;height:auto;flex-wrap:wrap} nav .links{gap:8px;margin-left:0;width:100%;justify-content:space-between} nav .btn{padding:.45em .7em;font-size:.82rem} .tgl{width:34px;height:34px}}
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero .glow{position:absolute;inset:-40% -20% auto auto;width:70%;height:600px;background:radial-gradient(closest-side,rgba(226,162,59,.22),transparent 70%);pointer-events:none}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:74px 22px}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.025em}
+  .hero p.lead{font-size:1.18rem;color:var(--mut);margin:1.1em 0 1.6em;max-width:34ch}
+  .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero figure{margin:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000}
+  .hero figure img{width:100%;display:block}
+  .resumo{padding:38px 0 34px;border-bottom:1px solid var(--line)}
+  .resumo p{font-size:1.12rem;line-height:1.7;max-width:74ch;margin:.55em 0 0}
+  @media(max-width:780px){.hero .wrap{grid-template-columns:1fr;padding:48px 22px}}
+  section{padding:62px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em}
+  section .sub{color:var(--mut);margin:.6em 0 2em;max-width:62ch}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{font-size:1.05rem;margin-bottom:.4em}
+  .card p{color:var(--mut);font-size:.92rem;margin:0}
+  .num{display:inline-flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:8px;background:rgba(226,162,59,.14);color:var(--amb);font-family:Sora;font-weight:800;font-size:.9rem;margin-bottom:.7em}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:.45em .9em;font-size:.85rem;font-family:Sora;font-weight:600}
+  .flow .arr{color:var(--amb);border:none;background:none;padding:0 .1em}
+  pre{background:#0a0a0e;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font-size:.86rem;line-height:1.6;color:#d6d6e0}
+  pre .c{color:#6f6f7c} pre .k{color:var(--amb2)} pre .s{color:#9ece6a}
+  .step{display:grid;grid-template-columns:46px minmax(0,1fr);gap:16px;margin-bottom:26px}
+  .step>div,.card{min-width:0}
+  p code,li code,td code{overflow-wrap:anywhere}
+  .step .b{width:46px;height:46px;border-radius:12px;background:var(--amb);color:#1a1206;font-family:Sora;font-weight:800;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:1.12rem;margin-bottom:.3em}
+  .step p{color:var(--mut);margin:.2em 0 .7em}
+  .phase{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .phase:last-child{border:none}
+  .phase .tag{flex:0 0 92px;font-family:Sora;font-weight:800;color:var(--amb)}
+  .phase .d strong{display:block;margin-bottom:.2em}
+  .phase .d span{color:var(--mut);font-size:.92rem}
+  footer{padding:46px 0;text-align:center;color:var(--mut);font-size:.9rem}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.3em .8em;font-size:.78rem;color:var(--mut);margin:0 4px}
+  .tbl{width:100%;border-collapse:collapse;font-size:.92rem}
+  .tbl th,.tbl td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl th{font-family:Sora;color:var(--amb);font-weight:600}
+  .tbl td{color:var(--mut)} .tbl td:first-child{color:var(--txt);font-weight:600}
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="emoji">🎙️</span> VoiceStudio</a>
+  <span class="sep">|</span>
+  <span class="clubpro">
+    <a class="inema" href="https://inema.club" target="_blank" rel="noopener">INEMA.CLUB</a>
+    <span class="sep">-</span>
+    <a class="pro" href="https://inema.pro" target="_blank" rel="noopener">PRO</a>
+  </span>
+  <div class="links">
+    <a class="sec" href="#oque">What it is</a>
+    <a class="sec" href="#fluxo">How it works</a>
+    <a class="sec" href="#guia">User guide</a>
+    <a class="sec" href="#inema">At INEMA</a>
+    <span class="lang"><a href="../">PT</a><a class="on" href="./">EN</a><a href="../es/">ES</a></span>
+    <button class="tgl" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+    <a class="btn" href="https://github.com/inematds/VoiceStudio" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div>
+      <span class="chip">Voice and audio · open source</span>
+      <h1>Your voice, running <span class="amb">locally</span></h1>
+      <p class="lead">Voice cloning, voice from a description, dubbing and transcription in 646 languages, on your own machine and with no per-minute fees.</p>
+      <div class="cta">
+        <a class="btn" href="#guia">Start the guide</a>
+        <a class="btn ghost" href="https://github.com/inematds/VoiceStudio" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+    </div>
+    <figure><img src="../assets/banner-en.jpg" alt="VoiceStudio banner: your local voice — cloning, dubbing and transcription without the cloud"></figure>
+  </div>
+</header>
+
+<section id="resumo" class="resumo"><div class="wrap">
+  <span class="chip">In short</span>
+  <p>VoiceStudio is a free, open-source program that does on your computer what paid services like ElevenLabs do in the cloud. It copies a voice from a few seconds of recording, creates new voices from a text description, dubs videos and transcribes audio in 646 languages. It is for anyone who makes videos, courses, podcasts or audiobooks and wants narration without paying per minute or sending the audio elsewhere. You need a computer with about 10 GB free; with an NVIDIA graphics card it is much faster.</p>
+</div></section>
+
+<section id="oque"><div class="wrap">
+  <span class="chip">What it is</span>
+  <h2>A complete voice studio, no cloud</h2>
+  <p class="sub">A project by <a href="https://github.com/debpalash/VoiceStudio" target="_blank" rel="noopener">debpalash/VoiceStudio</a> (AGPL-3.0 license), mirrored by INEMA with this guide. Everything runs on your hardware; remote services are optional.</p>
+  <figure style="margin:0 0 26px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000"><img src="../assets/banner-grade-en.jpg" alt="VoiceStudio features: voice cloning, video dubbing, voice from a description, transcription, 646 languages, local API and MCP" loading="lazy" style="width:100%;display:block"></figure>
+  <div class="grid g3">
+    <div class="card"><h3>🎙️ Clones and creates voices</h3><p>A clean recording of a few seconds becomes a reusable voice. Or describe the voice ("female, deep, documentary tone") and it builds a new one.</p></div>
+    <div class="card"><h3>🎬 Dubs and transcribes</h3><p>Video dubbing with speech in the right timing, transcription with WhisperX, speaker separation and isolation of the voice from the background music.</p></div>
+    <div class="card"><h3>🤖 Talks to agents</h3><p>A local API compatible with OpenAI's and an MCP server: Claude Code and Codex can generate speech, clone voices and transcribe directly.</p></div>
+  </div>
+</div></section>
+
+<section id="fluxo"><div class="wrap">
+  <span class="chip">How it works</span>
+  <h2>One backend, several voice engines</h2>
+  <p class="sub">The app (Electron) talks to a Python backend on port 3900. The backend loads the chosen engine and keeps the models in memory.</p>
+  <div class="flow">
+    <span>Text or audio</span><span class="arr">→</span>
+    <span>Backend :3900</span><span class="arr">→</span>
+    <span>Voice engine</span><span class="arr">→</span>
+    <span>WAV / Ogg / text</span><span class="arr">→</span>
+    <span>App, API or MCP</span>
+  </div>
+  <div class="grid g2" style="margin-top:26px">
+    <div class="card"><h3>Speech engines (17)</h3><p>OmniVoice (default, 646 languages), CosyVoice 3, IndexTTS 2.5, VoxCPM2, MOSS-TTS, dots.tts, GPT-SoVITS, KittenTTS, Supertonic 3, PocketTTS and others. Each one has its own model license.</p></div>
+    <div class="card"><h3>Transcription engines</h3><p>WhisperX (default), Faster-Whisper, Whisper, Parakeet TDT, Moonshine, FunASR and sherpa-onnx for live dictation.</p></div>
+  </div>
+</div></section>
+
+<section id="pre"><div class="wrap">
+  <span class="chip">Prerequisites</span>
+  <h2>What you need</h2>
+  <p class="sub">Ready-made packages are available for Windows, macOS and Linux x86_64. On Linux ARM64 (such as the DGX Spark/GB10) there is no package or Docker image: only the install from source code.</p>
+  <div class="grid g3">
+    <div class="card"><h3>Disk and graphics card</h3><p>About 10 GB free for the app, Python and the models. NVIDIA (CUDA) or Apple Silicon speed it up; without a card it runs on the CPU, more slowly.</p><pre><span class="c"># check space and GPU</span>
+<span class="k">df</span> -h ~ ; <span class="k">nvidia-smi</span></pre></div>
+    <div class="card"><h3>For the ready-made app</h3><p>Nothing beyond the installer: it downloads Python, FFmpeg, yt-dlp and the models on first use.</p><pre><span class="c"># macOS / Linux x86_64</span>
+<span class="k">curl</span> -fsSL https://voicestudio.sh/install | sh</pre></div>
+    <div class="card"><h3>For the source code</h3><p>Git, Bun, uv, Node.js 22+ and Rust/Cargo, plus the system audio libraries.</p><pre><span class="k">curl</span> -fsSL https://bun.sh/install | bash
+<span class="k">curl</span> -LsSf https://astral.sh/uv/install.sh | sh</pre></div>
+  </div>
+</div></section>
+
+<section id="guia"><div class="wrap">
+  <span class="chip">User guide · step by step</span>
+  <h2>From zero to your first voice</h2>
+  <p class="sub">The commands below come from the project's official documentation.</p>
+
+  <div class="step"><div class="b">1</div><div>
+    <h3>Install the app</h3>
+    <p>On Windows, use PowerShell. On macOS and Linux x86_64, the one-line script. Or download the <code>.dmg</code>, <code>.exe</code>, <code>.AppImage</code> or <code>.deb</code> from the Releases page.</p>
+<pre><span class="c"># Windows (PowerShell)</span>
+<span class="k">irm</span> https://voicestudio.sh/install | iex
+<span class="c"># macOS / Linux x86_64</span>
+<span class="k">curl</span> -fsSL https://voicestudio.sh/install | sh</pre>
+  </div></div>
+
+  <div class="step"><div class="b">2</div><div>
+    <h3>Or run from the source code</h3>
+    <p>This is the path on Linux ARM64 and for anyone who wants the newest version. <code>setup:api</code> prepares Python; <code>dev</code> opens the app and starts the backend.</p>
+<pre><span class="k">git clone</span> https://github.com/inematds/VoiceStudio.git
+<span class="k">cd</span> VoiceStudio
+<span class="k">bun install</span>
+<span class="k">bun run</span> setup:api   <span class="c"># Python environment with uv</span>
+<span class="k">bun run</span> dev         <span class="c"># app + backend on port 3900</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">3</div><div>
+    <h3>Backend only, no screen (server)</h3>
+    <p>To use it through the API or MCP on a server, start only the backend. Without an NVIDIA card, force the CPU version of PyTorch.</p>
+<pre><span class="k">bun run</span> dev:api                                <span class="c"># backend on 127.0.0.1:3900</span>
+<span class="k">OMNIVOICE_TORCH_VARIANT</span>=cpu <span class="k">bun run</span> setup:api   <span class="c"># without NVIDIA</span>
+<span class="k">curl</span> http://127.0.0.1:3900/.well-known/voicestudio-speech</pre>
+  </div></div>
+
+  <div class="step"><div class="b">4</div><div>
+    <h3>Clone your first voice</h3>
+    <p>In the app, open <strong>Voice cloning</strong>, pick a voice or upload a clean recording (no music, no noise), type the text and generate. The app asks you to install the model the first time (about 2.4 GB).</p>
+<pre><span class="c"># transcribe a file with the client that ships with the project</span>
+<span class="k">python -m</span> backend.speech_client transcribe <span class="s">recording.wav</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">5</div><div>
+    <h3>Connect it to your agent (MCP)</h3>
+    <p>The MCP server is already mounted on the backend at <code>/mcp/</code>. Tools: <code>generate_speech</code>, <code>clone_voice</code>, <code>design_voice</code>, <code>transcribe</code>, <code>list_voices</code>. Example for the Codex CLI:</p>
+<pre><span class="c"># ~/.codex/config.toml</span>
+[mcp_servers.voicestudio]
+url = <span class="s">"http://127.0.0.1:3900/mcp/"</span>
+http_headers = { <span class="s">"X-OmniVoice-Client-Id"</span> = <span class="s">"codex-cli"</span> }</pre>
+    <p>In Claude Code, the app exports a ready-made <code>.mcp.json</code> under <strong>Integrations</strong>.</p>
+  </div></div>
+
+  <div class="step"><div class="b">6</div><div>
+    <h3>Turn off telemetry</h3>
+    <p>Usage analytics only turn on with consent. To make sure it stays off, set the variable before starting the backend.</p>
+<pre><span class="k">export</span> OMNIVOICE_ANALYTICS_DISABLED=1</pre>
+  </div></div>
+</div></section>
+
+<section id="inema"><div class="wrap">
+  <span class="chip">At INEMA</span>
+  <h2>What it adds to what we already use</h2>
+  <p class="sub">Comparison with our voice chain (inemavox with chatterbox, Whisper and dubbing; avatar through the HeyGen studio).</p>
+  <div class="tblwrap"><table class="tbl">
+    <tr><th>Function</th><th>Today at INEMA</th><th>VoiceStudio</th></tr>
+    <tr><td>Download</td><td>inemavox (yt-dlp)</td><td>yt-dlp as well: nothing new</td></tr>
+    <tr><td>Transcription</td><td>Whisper large-v3 / Parakeet</td><td>Equivalent (WhisperX, Parakeet)</td></tr>
+    <tr><td>Voice cloning</td><td>chatterbox (voices nei, rachel)</td><td>17 engines, including OmniVoice, CosyVoice 3 and IndexTTS 2.5</td></tr>
+    <tr><td>EN/ES voice without an avatar</td><td>Depends on the HeyGen studio</td><td>Multilingual engines with cloning</td></tr>
+    <tr><td>Voice from a description</td><td>We don't have it</td><td>Yes (design_voice)</td></tr>
+    <tr><td>Isolate voice / separate speakers</td><td>We don't have it</td><td>Yes</td></tr>
+    <tr><td>Agents</td><td>Our own scripts</td><td>MCP and API in the OpenAI format</td></tr>
+  </table></div>
+</div></section>
+
+<section id="roadmap"><div class="wrap">
+  <span class="chip">Next steps</span>
+  <h2>Evaluation on the server</h2>
+  <p class="sub">The mirror and this guide are published; the hands-on test has not been done yet.</p>
+  <div class="phase"><div class="tag">Pilot</div><div class="d"><strong>Install only the backend on ARM64</strong><span>From the source code, with a memory cap and local-only access.</span></div></div>
+  <div class="phase"><div class="tag">Test</div><div class="d"><strong>Same text, three engines</strong><span>OmniVoice, IndexTTS 2.5 and CosyVoice 3 against chatterbox, with the same reference voice, checked by transcription and by ear.</span></div></div>
+  <div class="phase"><div class="tag">Decision</div><div class="d"><strong>Become an inemavox engine</strong><span>If any engine wins, it joins inemavox as a new option, with no parallel system.</span></div></div>
+</div></section>
+
+<footer>
+  <div class="wrap">
+    <div class="pill">Python</div><div class="pill">Electron</div><div class="pill">AGPL-3.0</div>
+    <p style="margin-top:18px">VoiceStudio · created by <a href="https://github.com/debpalash/VoiceStudio">debpalash</a>, INEMA guide ·
+      <a href="https://github.com/inematds/VoiceStudio">inematds/VoiceStudio</a> ·
+      <a href="https://inema.club">INEMA.CLUB</a></p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var KEY='VoiceStudio-theme';
+    var b=document.body, t=document.getElementById('themeToggle');
+    if(localStorage.getItem(KEY)==='light'){ b.classList.add('light'); t.textContent='☀️'; }
+    t.addEventListener('click',function(){
+      var light=b.classList.toggle('light');
+      t.textContent=light?'☀️':'🌙';
+      localStorage.setItem(KEY, light?'light':'dark');
+    });
+  })();
+</script>
+</body>
+</html>
